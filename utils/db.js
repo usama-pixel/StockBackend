@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 const { dbPort, dbUser, dbPass, dbHost, dbName } = require("./env");
 
-const sequezlie = new Sequelize({
+const sequelize = new Sequelize({
     dialect: 'postgres',
     host: dbHost,
     database: dbName,
@@ -10,4 +10,4 @@ const sequezlie = new Sequelize({
     password: dbPass,
 })
 
-module.exports = {sequezlie}
+module.exports = {sequelize}

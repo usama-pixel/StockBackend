@@ -1,16 +1,13 @@
 const { DataTypes } = require('sequelize')
-const { sequezlie } = require("../utils/db");
+const { sequelize: sequezlie } = require("../utils/db");
 
-const Batch = sequezlie.define('Batch', {
+const Batch = sequezlie.define('Batches', {
     id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         unique: true,
         primaryKey: true,
         allowNull: false,
-    },
-    batch_no: {
-        type: DataTypes.STRING,
-        allowNull: false
+        autoIncrement: true
     },
     product_name: {
         type: DataTypes.STRING,
@@ -41,6 +38,15 @@ const Batch = sequezlie.define('Batch', {
     tax: {
         type: DataTypes.FLOAT,
         defaultValue: 0
+    },
+    to: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    total_amt: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+        allowNull: true
     }
 }, { paranoid: true })
 

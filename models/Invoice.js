@@ -1,13 +1,14 @@
 const { DataTypes } = require('sequelize')
-const { sequezlie } = require("../utils/db");
+const { sequelize: sequezlie } = require("../utils/db");
 const User = require('./User');
 
 const Invoice = sequezlie.define('Invoice', {
     id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         unique: true,
         allowNull: false,
+        autoIncrement: true
     },
     party_acc_no: {
         type: DataTypes.STRING,
