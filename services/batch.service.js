@@ -4,11 +4,37 @@ const { ApiError } = require("../utils/ApiError");
 const Batch = require("../models/Batch");
 const Status = require("../models/Status");
 
-async function getBatches(user_id, page, limit) {
+async function getBatches(user_id, page, limit, search) {
     const status_ids = await getStatuses(['returned', 'recieved'])
-    const where = {
+    let where = {
         user_id,
-        [Op.or]: status_ids,
+        [Op.and]: [
+            {[Op.or]: status_ids,}
+        ]
+    }
+    if(search) {
+        where = {
+            ...where,
+            [Op.and]: [
+                {
+                    [Op.or]: [
+                        {
+                            product_name: {
+                                [Op.iLike]: `%${search}%`
+                            }
+                        },
+                        {
+                            packing: {
+                                [Op.iLike]: `%${search}%`
+                            }
+                        },
+                    ],
+                },
+                {
+                    [Op.or]: status_ids,
+                }
+            ],
+        }
     }
     let config = {
         where,
@@ -99,11 +125,11 @@ async function batchSent(user_id, page, limit, search) {
         where = {
             ...where,
             [Op.or]: [
-                {
-                    id: {
-                        [Op.iLike]: `%${search}%`
-                    }
-                },
+                // {
+                //     id: {
+                //         [Op.like]: `%${search}%`
+                //     }
+                // },
                 {
                     product_name: {
                         [Op.iLike]: `%${search}%`
@@ -114,15 +140,11 @@ async function batchSent(user_id, page, limit, search) {
                         [Op.iLike]: `%${search}%`
                     }
                 },
-                // {quantity: `%${search}%`},
-                // {discount: `%${search}%`},
-                // {tax: `%${search}$`},
                 {
                     to: {
                         [Op.iLike]: `%${search}%`
                     }
                 },
-                // {expiry: search},
             ],
         }
     }

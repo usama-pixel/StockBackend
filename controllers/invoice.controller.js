@@ -3,8 +3,8 @@ const invoiceService = require('../services/invoice.service')
 const fs = require('fs')
 async function getInvoices(req, res, next) {
     try {
-        const {page, limit} = req.query
-        const invoices = await invoiceService.getInvoices(req.user.id, page, limit)
+        const {page, limit, search} = req.query
+        const invoices = await invoiceService.getInvoices(req.user.id, page, limit, search)
         res.json(invoices)
     } catch(err) {
         next(err)

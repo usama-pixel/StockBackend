@@ -3,19 +3,60 @@ const { ApiError } = require("../utils/ApiError");
 const Invoice = require("../models/Invoice")
 const Batch = require("../models/Batch");
 const { format } = require('date-fns')
+const { Op } = require('sequelize')
+const numberToText = require('number-to-text')
+require('number-to-text/converters/en-us');
 
-async function getInvoices(user_id, page, limit) {
+async function getInvoices(user_id, page, limit, search) {
     let config = {
         where: {
             user_id
         },
         order: [['updatedAt', 'DESC']],
+        include: [Batch]
     }
     if(page && limit) {
         config = {
             ...config,
             limit,
             offset: (page*limit)
+        }
+    }
+    if(search) {
+        config.where = {
+            ...config.where,
+            [Op.or]: [
+                {
+                    party_acc_no: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                },
+                {
+                    party_name: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                },
+                {
+                    proreitor: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                },
+                {
+                    cnic_no: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                },
+                {
+                    town: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                },
+                {
+                    salesman: {
+                        [Op.iLike]: `%${search}%`
+                    }
+                },
+            ],
         }
     }
     const count = await Invoice.count({...config.where})
@@ -228,6 +269,8 @@ const drawTable = (doc, invoice, batches) => {
     doc.fontSize(14).text(`W.H Tax  :- ${((totalTax/totalGrossAmt)*100).toFixed(2)}%   ${totalTax.toFixed(2)}`, startXCol2, mt+30)
     doc.text(`With Tax Amount   :- ${(totalGrossAmt+totalTax-totalDiscount).toFixed(2)}`, startXCol2, mt+48, {continued: true})
     doc.fontSize(7).text(' (discount incl.)')
+    const text = numberToText.convertToText(totalGrossAmt+totalTax-totalDiscount)
+    doc.fontSize(10).text(`TOTAL RUPEES :- ${text.toUpperCase()} RUPEES ONLY`, startX+5, mt+120)
 }
 
 const formatDate = (date) => {

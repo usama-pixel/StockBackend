@@ -2,8 +2,8 @@ const batchService = require('../services/batch.service')
 
 async function getBatches(req, res, next) {
     try {
-        const {page, limit} = req.query
-        const result = await batchService.getBatches(req.user.id, page, limit)
+        const {page, limit, search} = req.query
+        const result = await batchService.getBatches(req.user.id, page, limit, search)
         res.json(result);
     } catch(err) {
         next(err)
