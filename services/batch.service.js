@@ -104,6 +104,7 @@ async function updateBatch(data, user_id, status) {
 }
 
 async function sendBatch(to, batch_id, user_id) {
+        // throw new ApiError({message: 'test', status: 400})
     console.log({to, batch_id, user_id})
     const status = await getStatuses(['sent'])
     const batch = await Batch.findOne({where: {id: batch_id}})
@@ -125,11 +126,6 @@ async function batchSent(user_id, page, limit, search) {
         where = {
             ...where,
             [Op.or]: [
-                // {
-                //     id: {
-                //         [Op.like]: `%${search}%`
-                //     }
-                // },
                 {
                     product_name: {
                         [Op.iLike]: `%${search}%`

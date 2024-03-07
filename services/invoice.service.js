@@ -71,8 +71,8 @@ async function createInvoice(data, batch_ids=[]) {
         if(batch_ids.length === 0) {
             throw new ApiError({message: 'Please select a least one batch', status: 400})
         }
-            const invoice = new Invoice({...data})
-            invoice.save()
+        const invoice = new Invoice({...data})
+        invoice.save()
         
         const batches = await Batch.findAll({where: {
             id: batch_ids
