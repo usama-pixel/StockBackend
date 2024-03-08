@@ -1,9 +1,9 @@
 const port = process.env.PORT
-const dbPort = process.env.DB_PORT
-const dbUser = process.env.DB_USERNAME
-const dbPass = process.env.DB_PASSWORD
-const dbHost = process.env.DB_Host
-const dbName = process.env.DB_NAME
+const dbPort = process.env.PGPORT
+const dbUser = process.env.PGUSER
+const dbPass = process.env.PGPASSWORD
+const dbHost = process.env.PGHOST
+const dbName = process.env.POSTGRES_DB
 const saltRounds = process.env.SALT_ROUNDS
 const jwtSecret = process.env.JWT_SECRET
 
