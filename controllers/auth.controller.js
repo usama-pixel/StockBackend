@@ -5,8 +5,8 @@ async function login(req, res, next) {
     try {
         const {email, password} = req.body
         if(!email || !password) throw new ApiError('Empty fields', 'All fields must be filled', 400)
-        const result = await authService.login({email, password})
-        res.json(result)
+        const { result, cookie } = await authService.login({email, password})
+        res.setHeader('Set-Cookie', cookie).json(result)
     } catch(err) {
         console.log(err)
         next(err)

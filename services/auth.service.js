@@ -4,7 +4,10 @@ const jwt = require('jsonwebtoken')
 const {v4: uuidv4} = require('uuid')
 const { ApiError } = require('../utils/ApiError')
 const { saltRounds, jwtSecret } = require("../utils/env")
+const { serialize } = require('cookie')
 
+const MAX_AGE = 60 * 60 * 24 * 30
+// const MAX_AGE = 10
 exports.signup = async ({firstname, lastname, email, password}) => {
     const user = await User.findOne({
         where: {
@@ -39,8 +42,15 @@ exports.login = async ({email, password}) => {
     if (!isPasswordValid) {
         throw new ApiError({message: 'Invalid email or password', status: 401})
     }
-    const token = jwt.sign({user_id: user?.dataValues?.id}, jwtSecret)
+    const token = jwt.sign({user_id: user?.dataValues?.id}, jwtSecret, {expiresIn: MAX_AGE})
+    const cookie = serialize('myCookie', token, {
+        httpOnly: true,
+        secure: true,
+        maxAge: MAX_AGE,
+        path: '/'
+    })
+    console.log({ cookie })
     const { password: pass, ...revised_data } = user.dataValues
     user.dataValues = { token, ...revised_data }
-    return { message: 'Login successful', user };
+    return { result: {message: 'Login successful', user,}, cookie };
 }
