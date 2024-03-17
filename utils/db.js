@@ -7,7 +7,7 @@ const sequelize = new Sequelize({
     database: dbName,
     port: dbPort+"",
     username: dbUser,
-    password: dbPass,
+    password: dbPass || '',
 })
 
 module.exports = {sequelize}
