@@ -30,6 +30,16 @@ const Invoice = sequezlie.define('Invoice', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    discount: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+        allowNull: true,
+    },
+    tax: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+        allowNull: true
+    },
     licence_no: {
         type: DataTypes.STRING,
         allowNull: false,

@@ -1,5 +1,6 @@
 const { Op } = require("sequelize")
 const Batch = require("../models/Batch")
+const Invoices = require("../models/Invoice")
 const Status = require("../models/Status")
 const { sequelize } = require("../utils/db")
 const { ApiError } = require("../utils/ApiError")
@@ -23,10 +24,10 @@ async function getTax(user_id, monthIndex, year, mode) {
             endDate
         ]
     }
-    const d = await Batch.sum('tax', {
+    const d = await Invoices.sum('tax', {
         where: {
             user_id,
-            status_id: status.dataValues.id,
+            // status_id: status.dataValues.id,
             updatedAt: monthYearCondition
         }
     })
@@ -86,17 +87,15 @@ async function getRevenue(user_id, monthIndex, year, mode) {
             updatedAt: monthYearCondition
         }
     });
-    const totalDiscount = await Batch.sum('discount', {
+    const totalDiscount = await Invoices.sum('discount', {
         where: {
             user_id,
-            status_id: status.dataValues.id,
             updatedAt: monthYearCondition,
         }
     });
-    const totalTax = await Batch.sum('tax', {
+    const totalTax = await Invoices.sum('tax', {
         where: {
             user_id,
-            status_id: status.dataValues.id,
             updatedAt: monthYearCondition,
         }
     });

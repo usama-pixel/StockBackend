@@ -31,14 +31,6 @@ const Batch = sequezlie.define('Batches', {
         type: DataTypes.DATE,
         allowNull: true
     },
-    discount: {
-        type: DataTypes.FLOAT,
-        defaultValue: 0
-    },
-    tax: {
-        type: DataTypes.FLOAT,
-        defaultValue: 0
-    },
     to: {
         type: DataTypes.STRING,
         allowNull: true

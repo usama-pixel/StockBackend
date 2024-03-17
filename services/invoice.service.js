@@ -185,28 +185,28 @@ const drawTable = (doc, invoice, batches) => {
     doc.text('RATE', textX, 180)
 
     boxX = boxX + colWidth/6.5
-    doc.rect(boxX, startY+120, colWidth/4.5, rowHeight/4).stroke();
+    doc.rect(boxX, startY+120, colWidth/1.45, rowHeight/4).stroke();
 
-    textX = (boxX) + 5
+    textX = (boxX) + 70
     doc.text('GROSS AMT', textX, 180)
 
-    boxX = boxX + colWidth/4.5
-    doc.rect(boxX, startY+120, colWidth/7.8, rowHeight/4).stroke();
+    // boxX = boxX + colWidth/4.5
+    // doc.rect(boxX, startY+120, colWidth/7.8, rowHeight/4).stroke();
 
-    textX = (boxX) + 5
-    doc.text('DISC', textX, 180)
+    // textX = (boxX) + 5
+    // doc.text('DISC', textX, 180)
 
-    boxX = boxX + colWidth/7.8
-    doc.rect(boxX, startY+120, colWidth/8.5, rowHeight/4).stroke();
+    // boxX = boxX + colWidth/7.8
+    // doc.rect(boxX, startY+120, colWidth/8.5, rowHeight/4).stroke();
 
-    textX = (boxX) + 8
-    doc.text('TAX', textX, 180)
+    // textX = (boxX) + 8
+    // doc.text('TAX', textX, 180)
 
-    boxX = boxX + colWidth/8.5
-    doc.rect(boxX, startY+120, colWidth/4.5, rowHeight/4).stroke();
+    // boxX = boxX + colWidth/8.5
+    // doc.rect(boxX, startY+120, colWidth/4.5, rowHeight/4).stroke();
 
-    textX = (boxX) + 8
-    doc.text('NET AMOUNT', textX, 180)
+    // textX = (boxX) + 8
+    // doc.text('NET AMOUNT', textX, 180)
     let y = 210
     let totalQty = 0
     let totalGrossAmt = 0
@@ -216,13 +216,13 @@ const drawTable = (doc, invoice, batches) => {
         boxX = startX
         textX = boxX + 5
         y = y + 15
-        doc.text(((i+1)+''), textX, y)
+        doc.text(((i+1)+''), textX, y) // serial number
         boxX = boxX + colWidth/8
         textX = boxX + 10
-        doc.text(batch.product_name, textX, y)
+        doc.text(batch.product_name, textX, y) // product name
         boxX = boxX + colWidth/2.5
         textX = (boxX) + 5
-        doc.text(batch.packing, textX, y)
+        doc.text(batch.packing, textX, y) // packing
         boxX = boxX + colWidth/6.5
         textX = (boxX) + 5
         doc.text(batch.id, textX, y) // batch no
@@ -236,40 +236,46 @@ const drawTable = (doc, invoice, batches) => {
         textX = (boxX) + 10
         doc.text(batch.rate?.toFixed(2), textX, y) // rate
         boxX = boxX + colWidth/6.5
-        textX = (boxX) + 5
+        textX = (boxX) + 70
         const grossAmt = (+batch.quantity)*(+batch.rate)
         doc.text(grossAmt.toFixed(2), textX, y) // gross amt
-        boxX = boxX + colWidth/4.5
-        textX = (boxX) + 5
-        doc.text(batch.discount?.toFixed(2), textX, y) // discount
-        boxX = boxX + colWidth/7.8
-        textX = (boxX) + 8
-        doc.text(batch.tax?.toFixed(2), textX, y) // tax
-        boxX = boxX + colWidth/8.5
-        textX = (boxX) + 8
-        doc.text((grossAmt-batch.discount+batch.tax)?.toFixed(2), textX, y) // net amount
+        // boxX = boxX + colWidth/4.5
+        // textX = (boxX) + 5
+        // doc.text(batch.discount?.toFixed(2), textX, y) // discount
+        // boxX = boxX + colWidth/7.8
+        // textX = (boxX) + 8
+        // doc.text(batch.tax?.toFixed(2), textX, y) // tax
+        // boxX = boxX + colWidth/8.5
+        // textX = (boxX) + 8
+        // doc.text((grossAmt-batch.discount+batch.tax)?.toFixed(2), textX, y) // net amount
         totalQty += batch.quantity
         totalGrossAmt += grossAmt
-        totalDiscount += +batch.discount
-        totalTax += +batch.tax
+        // totalDiscount += +batch.discount
+        // totalTax += +batch.tax
     })
+    // totalDiscount = 
     startX = 15
     doc.fontSize(14)
     const mt = y + 50
     console.log({startX: totalTax})
-    // co
+    totalTax = (+invoice.tax/100) * totalGrossAmt
+    const withTaxAmt = +(totalGrossAmt+totalTax).toFixed(2)
+    totalDiscount = (invoice.discount / 100) * totalGrossAmt
+    // totalTax = (invoice.tax / 100) * withTaxAmt
     doc.rect(startX + ((colWidth) * 0), mt, colWidth, rowHeight).stroke();
     doc.text(`Total  :- ${batches.length}     ${totalQty}`, startX+5, mt+10)
     doc.text(`Gross Amount :- ${totalGrossAmt.toFixed(2)}`, startX+5, mt+30)
-    doc.text(`Discount   :- ${totalDiscount.toFixed(2)}`, startX+5, mt+48)
+    doc.text(`W.H Tax   :- ${(+invoice.tax).toFixed(2)}%   ${totalTax.toFixed(2)} rs`, startX+5, mt+48)
+    doc.text(`Discount  :- ${(+invoice.discount).toFixed(2)}%   ${totalDiscount.toFixed(2)} rs`, startX+5, mt+68)
     
     doc.rect(startX + ((colWidth) * 1), mt, colWidth, rowHeight).stroke();
-    doc.text(`Before Tax Amount  :- ${(totalGrossAmt-totalDiscount).toFixed(2)}`, startXCol2, mt+10, {continued: true})
-    doc.fontSize(7).text(' (discount incl.)')
-    doc.fontSize(14).text(`W.H Tax  :- ${((totalTax/totalGrossAmt)*100).toFixed(2)}%   ${totalTax.toFixed(2)}`, startXCol2, mt+30)
-    doc.text(`With Tax Amount   :- ${(totalGrossAmt+totalTax-totalDiscount).toFixed(2)}`, startXCol2, mt+48, {continued: true})
-    doc.fontSize(7).text(' (discount incl.)')
-    const text = numberToText.convertToText(totalGrossAmt+totalTax-totalDiscount)
+    doc.fontSize(14).text(`Before Tax Amount  :- ${(totalGrossAmt).toFixed(2)}`, startXCol2, mt+10, )
+    doc.text(`With Tax Amount   :- ${(withTaxAmt).toFixed(2)}`, startXCol2, mt+30)
+    // doc.fontSize(7).text(' (discount incl.)')
+    // doc.fontSize(7).text(' (discount incl.)')
+    doc.text(`Final Amount   :- ${(Math.round(withTaxAmt-totalDiscount)).toFixed(2)}`, startXCol2, mt+58)
+    doc.fontSize(7).text(' (discount incl.)', startXCol2+48, mt+52)
+    const text = numberToText.convertToText(Math.round(withTaxAmt-totalDiscount))
     doc.fontSize(10).text(`TOTAL RUPEES :- ${text.toUpperCase()} RUPEES ONLY`, startX+5, mt+120)
 }
 
