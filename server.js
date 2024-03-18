@@ -39,7 +39,7 @@ Invoice.belongsToMany(Batch, { through: 'InvoiceBatch' })
 // User.hasMany(Batch)
 
 app.listen(port, () => {
-    sequezlie.sync({force: true})
+    sequezlie.sync({force: false})
     .then(res => {
         console.log('DB connected')
     }).catch(err => {

@@ -24,14 +24,21 @@ async function getTax(user_id, monthIndex, year, mode) {
             endDate
         ]
     }
-    const d = await Invoices.sum('tax', {
+    const d = await Invoices.findAll({
         where: {
             user_id,
             // status_id: status.dataValues.id,
             updatedAt: monthYearCondition
-        }
+        },
+        include: [Batch]
     })
-    return d
+    let tax = 0
+    d.map(({dataValues}) => {
+        let sum = 0
+        dataValues.Batches.map(({dataValues: b}) => sum += b?.total_amt)
+        tax += sum * ((dataValues?.tax||0)/100)
+    })
+    return tax.toFixed(2)
 }
 async function getSales(user_id, monthIndex, year, mode) {
     const status = await Status.findOne({where: {
@@ -58,8 +65,7 @@ async function getSales(user_id, monthIndex, year, mode) {
             updatedAt: monthYearCondition
         }
     });
-    console.log({totalSales})
-    return totalSales;
+    return totalSales.toFixed(2);
 }
 
 async function getRevenue(user_id, monthIndex, year, mode) {
@@ -87,20 +93,23 @@ async function getRevenue(user_id, monthIndex, year, mode) {
             updatedAt: monthYearCondition
         }
     });
-    const totalDiscount = await Invoices.sum('discount', {
+    const d = await Invoices.findAll({
         where: {
             user_id,
-            updatedAt: monthYearCondition,
-        }
-    });
-    const totalTax = await Invoices.sum('tax', {
-        where: {
-            user_id,
-            updatedAt: monthYearCondition,
-        }
-    });
+            updatedAt: monthYearCondition
+        },
+        include: [Batch]
+    })
+    let totalDiscount = 0
+    let totalTax = 0
+    d?.map(({dataValues}) => {
+        let sum = 0
+        dataValues?.Batches.map(({dataValues: b}) => sum += b?.total_amt)
+        totalTax += sum * ((dataValues?.tax||0)/100)
+        totalDiscount += sum * ((dataValues?.discount||0)/100)
+    })
     const totalRevenue = totalSales-totalDiscount-totalTax
-    return totalRevenue;
+    return totalRevenue.toFixed(2);
 }
 
 async function getDataPoints(user_id, monthIndex, year, mode) {
